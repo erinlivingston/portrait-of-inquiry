@@ -81,14 +81,14 @@
 .inquiry-details {
   margin-left: 2rem;
   padding-left: 1.5rem;
-  border-left: 3px solid #e0e0e0;
+  border-left: 3px solid rgb(251, 220, 84);
   margin-top: 1rem;
   margin-bottom: 2rem;
 }
 
 .inquiry-details strong {
   font-family: var(--font-sans);
-  color: #12087f;
+  color:rgb(182, 214, 76);
 }
   
   /* Optional: subtle visual cue on hover for interactive elements */

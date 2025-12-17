@@ -24,6 +24,7 @@
         <hr>
         <section id="ragmodel"> 
             <h3>Retrieval Augmented Generation Model</h3>
+            <I>Note: model requires local deployment</I>
                 <!-- RAG Interface Section -->
                     <div id="rag-interface" style="max-width: 800px; margin: 40px auto; padding: 20px; border: 3px solid #ffffff;">
                         <p style="color: #061237;">Here lies an open opportunity 
@@ -138,6 +139,11 @@
                 <p><strong>Data Preparation:</strong> Each drawing was photographed and saved as a JPEG file. Using Python's 
                 computer vision libraries (Pillow and scikit-learn), I extracted the 8 dominant colors from each image through 
                 K-means clustering. These color palettes are saved as RGB and hex values.</p>
+
+                <p>To preserve the <em>vividness</em> of the original drawings and avoid extracting neutral tones, the script 
+                    calculates each color's <I>saturation</I> (the intensity of the hue) and <I>brightness</I>, 
+                    filtering out whites, grays, and blacks. What remains are the most bright colors that carry affective weight.</p>
+
                 
                 <p><strong>Current Integration:</strong> The extracted colors influence the visual styling of the RAG interface—the 
                 purple gradients and accent colors you see are derived from patterns across these drawings. <em>Future exploration:</em> 
@@ -149,9 +155,22 @@
                     <!-- Images will be loaded here by JavaScript -->
                 </div>
 
+                <p> This process reveals both the possibilities and limits of computational 
+                    approaches to embodied knowledge. The algorithm can extract colo, but can it extract <em>feeling</em>? 
+                    It can identify a dominant purple, but does it understand feeling in varying marker strokes? The texture of the 
+                    paper? The pressure of a mark? </p>
+                    
+                    <p>By attempting to "feed" these drawings into the RAG system, I'm interrogating what gets preserved and what 
+                    gets lost when we translate material, affective experience into data. The collages become artifacts of this 
+                    translation—neither purely analog nor purely digital, but somewhere in between.</p>
+
                 <div id="color-preview" style="margin: 2rem 0;">
                     <h3>Color Palette Preview</h3>
+                    <p>The python script runs loosely like this: Drawing image → Resize → Convert to pixel array → 
+                        K-means finds color clusters → Filter for vividness → 
+                        Extract 8 dominant colors → Save as hex codes</p>
                     <div id="palette-grid"></div>
+                    
                 </div>
         
 
