@@ -23,6 +23,34 @@
         <hr>
         <section id="ragmodel"> 
             <I>Retrieval Augmented Generation Model Goes Here</I>
+                <!-- RAG Interface Section -->
+
+<div id="rag-interface" style="max-width: 800px; margin: 40px auto; padding: 20px; border: 1px solid #ccc;">
+    <p>Query your dialogic and intellectual inquiry sources</p>
+    
+    <div style="margin: 20px 0;">
+        <textarea 
+            id="prompt-input" 
+            placeholder="Enter your query here..."
+            style="width: 100%; min-height: 100px; padding: 10px; font-size: 16px;"
+        ></textarea>
+    </div>
+    
+    <button 
+        id="submit-btn"
+        style="padding: 10px 20px; font-size: 16px; cursor: pointer;"
+    >
+        Query
+    </button>
+    
+    <div id="loading" style="display: none; margin: 20px 0;">
+        Considering...
+    </div>
+    
+    <div id="output-div" style="margin-top: 30px;">
+        <!-- Results will appear here -->
+    </div>
+</div>
             </section>
         <hr>
         <br>
@@ -77,6 +105,7 @@
   </main>
 
   <!-- Load components in order -->
+  <script src="js/main.js"></script>
   <script type="module" src="js/components/dialogic-viz.js"></script>
   <script type="module" src="js/components/embodied-viz.js"></script>
   <script type="module" src="js/components/intellectual-viz.js"></script>
