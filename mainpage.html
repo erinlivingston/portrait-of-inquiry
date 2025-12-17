@@ -55,6 +55,8 @@
                     </div>
             </section>
         <br>
+
+
         <h2>Construction of this Conceptual Model</h2>
         <p>
             My goal is to consider how one's identity through inquiry could layer with knowledge through <i>senses</i> 
@@ -66,41 +68,273 @@
             imbue them with values they clearly weren't built with. I desire disclsoure, combined with curiosity in the ways we use AI. This project serves as that, and a deep 
             reflection of the ways I search for, and process, knowledge in myself and others.
             <br>
-            <br>
-            This project is composed of three parts. 
     </section>
-    <br>
-    <section id="dialogic">
-        <h2>Dialogic Inquiry</h2>
-        <p> How do we understand ourselves through our interactions with AI? What do my prompts
-            reval of me? Even more interesting to me, how can I wield the answers
-            to create betters versions digital infrasturctures in AI. (and my horizontal digital infrastucture?)
+
+        <h3>What is Retrieval Augmented Generation (RAG)?</h3>
+        <p>
+            RAG is a technique that combines information retrieval with generative AI. Rather than relying solely on a 
+            model's pre-trained knowledge, RAG first <em>retrieves</em> relevant information from a specific knowledge base, 
+            then uses a language model to <em>generate</em> a response grounded in that retrieved context.
         </p>
-    </section>
-    <br>
+        <p>
+            Traditional large language models like ChatGPT are trained on vast, undifferentiated datasets—an 
+            approach that homogenizes knowledge and erases specificity. RAG offers an alternative: it allows me to build a 
+            model anchored in <em>my</em> sources, <em>my</em> conversations, <em>my</em> notes, and <em>my</em> creative practice. 
+            The model doesn't "know" everything—it knows what I've fed it, creating hallucinations from my inquiry rather than 
+            a mirror of general knowledge.
+        </p>
 
-    <!--- Section with art therapy drawings  -->
-    <section id="embodied">
-        <h2>Embodied Inquiry</h2>
-        <p> I try to seek out opportunities to combine digital and physical modes of creating.</p>
+        <hr>
+        <br>
+            <h3>Dialogic Inquiry</h3>
+            <p> This form of inquiry represents aquiring knowledge through conversation and interaction.
+                
+                How do we understand ourselves through our interactions with AI? What do my prompts
+                reval of me? Even more interesting to me, how can I wield the answers
+                to create betters versions digital infrasturctures in AI. (and my horizontal digital infrastucture?)
+            </p>
+                <div class="inquiry-details">
+                <p><strong>Primary Source:</strong> My complete ChatGPT conversation history—2,637 messages exported from my account, 
+                spanning months of questions, collaborative thinking, problem-solving, and creative exploration.</p>
+                
+                <p><strong>Data Preparation:</strong> The raw export was cleaned using Python scripts to parse JSON/HTML formats into 
+                a structured CSV with columns for conversation title, timestamp, role (user/assistant), and message content. Empty messages 
+                were filtered out, resulting in 2,441 usable messages.</p>
+                
+                <p><strong>Technical Integration:</strong> Each message was converted into a vector embedding using the 
+                <code>all-MiniLM-L6-v2</code> sentence transformer model and stored in ChromaDB, a vector database. This enables 
+                semantic search—when you query the RAG, it retrieves the most conceptually relevant messages, not just keyword matches. 
+                The retrieved messages are then passed to a local LLM (Llama 3.2 via Ollama) to generate a synthesized response.</p> </div>
+        <hr>
+        <br>   
+                <h3>Intellectual Inquiry</h3>
+                <p>This layer represents my academic knowledge base, including conceptual frame works and ethical considerations
+                surrounding AI and data analysis.</p>
+                <div class="inquiry-details"> 
+                <p><strong>Primary Source:</strong> 60 pages of reading notes from two courses, containing annotations on 
+                    works by media and ai scholars like Kate Crawford, Dr. Brandeis Marshall, Dan Bouk and many others. These notes capture 
+                    key arguments, and my own connections between texts.</p>
+                    
+                    <p><strong>Data Preparation:</strong> The Word document (235,000 characters) was converted to plain text and chunked 
+                    into semantically coherent segments of approximately 1,000 characters each, preserving paragraph structure. This resulted 
+                    in 250 chunks. In future work on this project there's room for more robust data preparation in this category.
+                    The model is not as successful at drawing from this source and noting its application in responses. 
+                    </p>
+                    
+                    <p><strong>Technical Integration:</strong> Like the dialogic sources, these note chunks were vectorized and stored in 
+                    ChromaDB as a separate collection. When you query the model, it retrieves from both dialogic and intellectual sources 
+                    simultaneously, creating a synthesis between lived experience and scholarly discourse.</p> </div>
+        <hr>
+        <br>
+            <h3>Embodied Inquiry</h3>
+            <p> I try to seek out opportunities to combine digital and physical modes of creating. This layer
+                challenges the project to feed non-text based knowledge into a text based system. 
+            </p>
+            
+            <div class="inquiry-details">
+            <p><strong>Primary Source:</strong> Ten art therapy drawings created weekly throughout my fall semester, 
+                each representing emotional processing through life events, and my engagement with self-reflexivity.</p>
+                
+                <p><strong>Data Preparation:</strong> Each drawing was photographed and saved as a JPEG file. Using Python's 
+                computer vision libraries (Pillow and scikit-learn), I extracted the 8 dominant colors from each image through 
+                K-means clustering. These color palettes are saved as RGB and hex values.</p>
+                
+                <p><strong>Current Integration:</strong> The extracted colors influence the visual styling of the RAG interface—the 
+                purple gradients and accent colors you see are derived from patterns across these drawings. <em>Future exploration:</em> 
+                Could shapes, textures, or emotional tags from the drawings be fed as additional context to the LLM? Can AI honor 
+                materiality beyond extraction?</p>
+            </div>
+
+                <div id="art-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin: 2rem 0;">
+                    <!-- Images will be loaded here by JavaScript -->
+                </div>
+
+                <div id="color-preview" style="margin: 2rem 0;">
+                    <h3>Color Palette Preview</h3>
+                    <div id="palette-grid"></div>
+                </div>
         
-    </section>
-    <br>
-
-    <!--- Section with intellectual inquiry  -->
-    <section id="intellectual">
-        <h2>Intellectual Inquiry</h2>
-        <p>Conceptual frameworks and ethical considerations surrounding AI.</p>
-    </section>
-    <br>
-
-
-    </section>
 
   </main>
 
   <!-- Load components in order -->
   <script src="js/main.js"></script>
+
+  <script>
+    const artGrid = document.getElementById('art-grid');
+    const imageFiles = [
+      '8.12.25.jpeg', '9.18.25.jpeg', '9.25.25.jpeg', '10.9.25.jpeg', '10.16.25.jpeg',
+      '10.23.25.jpeg', '11.6.25.jpeg', '11.13.25.jpeg', '11.20.25.jpeg', '12.11.25.jpeg'
+    ];
+    
+    // Create lightbox container
+    const lightbox = document.createElement('div');
+    lightbox.id = 'lightbox';
+    lightbox.style.cssText = `
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    `;
+    
+    const lightboxImg = document.createElement('img');
+    lightboxImg.style.cssText = `
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    `;
+    
+    lightbox.appendChild(lightboxImg);
+    document.body.appendChild(lightbox);
+    
+    // Close lightbox when clicked
+    lightbox.addEventListener('click', () => {
+      lightbox.style.display = 'none';
+    });
+    
+    // Close with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.style.display === 'flex') {
+        lightbox.style.display = 'none';
+      }
+    });
+    
+    // Create grid images
+    imageFiles.forEach(filename => {
+      const img = document.createElement('img');
+      img.src = `/assets/atdrawings/${filename}`;
+      img.alt = `Art therapy drawing from ${filename.replace('.jpeg', '')}`;
+      img.loading = 'lazy';
+      img.style.cssText = `
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      `;
+      
+      // Hover effects
+      img.addEventListener('mouseenter', () => {
+        img.style.transform = 'scale(1.05)';
+        img.style.boxShadow = '0 4px 12px rgba(0,0,0,0.25)';
+      });
+      
+      img.addEventListener('mouseleave', () => {
+        img.style.transform = 'scale(1)';
+        img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+      });
+      
+      // Click to open lightbox
+      img.addEventListener('click', () => {
+        lightboxImg.src = img.src;
+        lightbox.style.display = 'flex';
+      });
+      
+      artGrid.appendChild(img);
+    });
+  </script>
+
+<script>
+    fetch('/assets/art_palettes.json')
+      .then(response => response.json())
+      .then(palettes => {
+        const grid = document.getElementById('palette-grid');
+        
+        Object.keys(palettes).forEach(date => {
+          const colors = palettes[date].hex;
+          
+          const paletteDiv = document.createElement('div');
+          paletteDiv.style.marginBottom = '1.5rem';
+          
+          paletteDiv.innerHTML = `
+            <h4>${date}</h4>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+              ${colors.map(color => `
+                <div style="width: 60px; height: 60px; background: ${color}; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+              `).join('')}
+            </div>
+          `;
+          
+          grid.appendChild(paletteDiv);
+        });
+      });
+    </script>
+
+<script>
+    // Create decorative color frame around RAG interface
+    fetch('/assets/art_palettes.json')
+      .then(response => response.json())
+      .then(palettes => {
+        const ragSection = document.getElementById('ragmodel');
+        
+        // Collect all colors
+        const allColors = [];
+        Object.values(palettes).forEach(palette => {
+          allColors.push(...palette.hex);
+        });
+        
+        // Shuffle
+        const shuffled = allColors.sort(() => Math.random() - 0.5);
+        
+        // Create decorative border at top
+        const topBorder = document.createElement('div');
+        topBorder.style.cssText = `
+          display: flex;
+          gap: 4px;
+          margin-bottom: 20px;
+          justify-content: center;
+          overflow: hidden;
+          flex-wrap: nowrap;
+        `;
+        
+        // Use plenty of squares - overflow will hide extras
+        shuffled.slice(0, 35).forEach(color => {
+          const square = document.createElement('div');
+          square.style.cssText = `
+            width: 25px;
+            height: 25px;
+            background: ${color};
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+          `;
+          topBorder.appendChild(square);
+        });
+        
+        // Create decorative border at bottom
+        const bottomBorder = document.createElement('div');
+        bottomBorder.style.cssText = topBorder.style.cssText;
+        
+        shuffled.slice(35, 70).forEach(color => {
+          const square = document.createElement('div');
+          square.style.cssText = `
+            width: 25px;
+            height: 25px;
+            background: ${color};
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+          `;
+          bottomBorder.appendChild(square);
+        });
+        
+        // Insert borders
+        ragSection.insertBefore(topBorder, ragSection.firstChild);
+        ragSection.appendChild(bottomBorder);
+      });
+  </script>
 
 </body>
 </html>

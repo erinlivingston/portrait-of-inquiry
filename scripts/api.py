@@ -4,6 +4,64 @@ from chromadb.utils import embedding_functions
 import ollama  # ADD THIS LINE
 import os
 
+from PIL import Image
+import random
+import io
+import base64
+
+def create_collage_for_query(drawing_files, output_size=(700, 350), num_pieces=10):
+    """Create a unique collage from random pieces of drawings"""
+    
+    # Create blank canvas with slight off-white
+    collage = Image.new('RGB', output_size, (250, 248, 245))
+    
+    for _ in range(num_pieces):
+        # Pick random drawing
+        drawing_path = random.choice(drawing_files)
+        try:
+            img = Image.open(drawing_path).convert('RGBA')
+        except:
+            continue
+        
+        # Random crop size
+        crop_w = random.randint(80, 250)
+        crop_h = random.randint(80, 250)
+        
+        # Random position in source image
+        max_x = max(0, img.width - crop_w)
+        max_y = max(0, img.height - crop_h)
+        x = random.randint(0, max_x) if max_x > 0 else 0
+        y = random.randint(0, max_y) if max_y > 0 else 0
+        
+        # Crop piece
+        piece = img.crop((x, y, x + crop_w, y + crop_h))
+        
+        # Random rotation
+        angle = random.choice([0, 90, 180, 270, 45, -45])
+        piece = piece.rotate(angle, expand=True, fillcolor=(250, 248, 245, 0))
+        
+        # Random position on canvas
+        if piece.width < output_size[0] and piece.height < output_size[1]:
+            paste_x = random.randint(0, output_size[0] - piece.width)
+            paste_y = random.randint(0, output_size[1] - piece.height)
+            
+            # Apply transparency for layering
+            if piece.mode == 'RGBA':
+                alpha = piece.split()[3]
+                alpha = alpha.point(lambda p: int(p * random.uniform(0.6, 0.9)))
+                piece.putalpha(alpha)
+                collage.paste(piece, (paste_x, paste_y), piece)
+    
+    # Convert to base64 for embedding in HTML
+    buffer = io.BytesIO()
+    collage.save(buffer, format='JPEG', quality=85)
+    img_data = base64.b64encode(buffer.getvalue()).decode()
+    
+    return f"data:image/jpeg;base64,{img_data}"
+
+
+
+
 # Get the parent directory (portrait-of-inquiry root)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -22,7 +80,7 @@ intellectual = client.get_collection("intellectual_inquiry", embedding_function=
 
 # API routes
 @app.route('/api/query', methods=['POST'])
-def query():  # 
+def query():
     try:
         print(f"=== QUERY ENDPOINT HIT ===")
         
@@ -91,25 +149,45 @@ Synthesize these sources to answer my question:"""
         
         # Generate with Ollama
         response = ollama.chat(
-            model='llama3.2',  # Change local model here
+            model='llama3.2',
             messages=[
                 {'role': 'system', 'content': system_prompt},
                 {'role': 'user', 'content': user_prompt}
             ], 
             options={
                 'num_predict': 300, 
-                'temperature': 0.7 #lower for more focused answers, higher for more creative
-                }
+                'temperature': 0.7
+            }
         )
         
         generated_response = response['message']['content']
         
         print(f"Generated response length: {len(generated_response)} chars")
         
+        # ============ ADD THIS SECTION HERE ============
+        # Generate unique collage for this query
+        drawing_files = [
+            os.path.join(BASE_DIR, 'assets/atdrawings/8.12.25.jpeg'),
+            os.path.join(BASE_DIR, 'assets/atdrawings/9.18.25.jpeg'),
+            os.path.join(BASE_DIR, 'assets/atdrawings/9.25.25.jpeg'),
+            os.path.join(BASE_DIR, 'assets/atdrawings/10.9.25.jpeg'),
+            os.path.join(BASE_DIR, 'assets/atdrawings/10.16.25.jpeg'),
+            os.path.join(BASE_DIR, 'assets/atdrawings/10.23.25.jpeg'),
+            os.path.join(BASE_DIR, 'assets/atdrawings/11.6.25.jpeg'),
+            os.path.join(BASE_DIR, 'assets/atdrawings/11.13.25.jpeg'),
+            os.path.join(BASE_DIR, 'assets/atdrawings/11.20.25.jpeg'),
+            os.path.join(BASE_DIR, 'assets/atdrawings/12.11.25.jpeg')
+        ]
+        
+        collage_data = create_collage_for_query(drawing_files)
+        print("Generated unique collage for this query")
+        # ============ END NEW SECTION ============
+        
         # Return both the generated answer and the sources
         response_data = {
             "query": user_input,
             "generated_answer": generated_response,
+            "collage": collage_data,  # ← ADD THIS LINE
             "dialogic_sources": [],
             "intellectual_sources": []
         }
@@ -134,6 +212,9 @@ Synthesize these sources to answer my question:"""
         import traceback
         traceback.print_exc()
         return jsonify({"error": str(e)}), 500
+    
+
+    
 
 @app.route('/api/health', methods=['GET'])
 def health():
@@ -171,4 +252,4 @@ if __name__ == '__main__':
     print("\nRegistered routes:")
     for rule in app.url_map.iter_rules():
         print(f"  {rule}")
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5001, debug=True)
