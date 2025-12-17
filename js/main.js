@@ -64,42 +64,79 @@ document.addEventListener('DOMContentLoaded', function() {
 function displayResults(data) {
     const outputDiv = document.getElementById('output-div');
     
-    let html = `<h3>Results for: "${data.query}"</h3>`;
+    let html = `<div style="margin-top: 30px;">`;
     
-    // Show generated answer prominently
+    html += `<h3 style="color:rgb(10, 2, 67); margin-bottom: 20px;">Response to: "${data.query}"</h3>`;
+    
     if (data.generated_answer) {
-        html += `<div style="background: #fff8e1; padding: 20px; margin: 20px 0; border-left: 4px solid #ffa726; font-size: 1.1em; line-height: 1.6;">
-            ${data.generated_answer.replace(/\n/g, '<br><br>')}
-        </div>`;
+        // Split by double newlines but render with single line breaks
+        const paragraphs = data.generated_answer.split('\n\n').filter(p => p.trim());
+        
+        html += `<div style="background: linear-gradient(135deg,rgb(142, 225, 255) 0%,rgb(160, 212, 247) 100%); 
+                        padding: 25px; 
+                        margin: 20px 0; 
+                        border-left: 5px solid rgb(10, 2, 67); 
+                        border-radius: 8px;
+                        box-shadow: 0 2px 8px rgba(9, 9, 9, 0.2);
+                        font-size: 1.05em; 
+                        line-height: 1.7;
+                        color: #333;">`;
+        
+        paragraphs.forEach((para, i) => {
+            // Add spacing between paragraphs but not excessive breaks
+            const marginTop = i > 0 ? 'margin-top: 15px;' : '';
+            html += `<p style="${marginTop} margin-bottom: 0;">${para}</p>`;
+        });
+        
+        html += `</div>`;
     }
     
-    // Add collapsible sources section
-    html += `<details style="margin: 20px 0;">
-        <summary style="cursor: pointer; font-weight: bold; padding: 10px; background: #f5f5f5;">
-            View Source Materials (${data.dialogic_sources.length + data.intellectual_sources.length} sources)
+    // Collapsible sources 
+    html += `<details style="margin: 25px 0; 
+                            border: 2px solidrgb(3, 164, 119); 
+                            border-radius: 8px; 
+                            padding: 10px;
+                            background:rgb(46, 184, 124);">
+        <summary style="cursor: pointer; 
+                       font-weight: bold; 
+                       padding: 10px; 
+                       color:rgb(234, 255, 234);
+                       font-size: 1.05em;">
+            Explore My Source Materials (${data.dialogic_sources.length + data.intellectual_sources.length} sources)
         </summary>
-        <div style="padding: 10px;">`;
+        <div style="padding: 15px;">`;
     
     // Dialogic sources
-    html += `<h4>From Your ChatGPT Conversations</h4>`;
+    html += `<I style="color:rgb(255, 255, 255); margin-top: 10px;">from my gpt conversations</I>`;
     data.dialogic_sources.forEach((source, i) => {
         html += `
-        <div style="background: #f5f5f5; padding: 15px; margin: 10px 0; border-left: 3px solid #333; font-size: 0.9em;">
-            <strong>${source.metadata.conversation_title}</strong> (${source.metadata.timestamp.split(' ')[0]})<br>
-            <p style="margin-top: 10px;">${source.content.substring(0, 200)}...</p>
+        <div style="background:rgb(230, 229, 245); 
+                    padding: 12px; 
+                    margin: 10px 0; 
+                    border-left: 3px solidrgb(127, 82, 135); 
+                    border-radius: 4px;
+                    font-size: 0.9em;">
+            <strong style="color:rgb(48, 94, 163);">${source.metadata.conversation_title}</strong> 
+            <span style="color: #888; font-size: 0.85em;">(${source.metadata.timestamp.split(' ')[0]})</span><br>
+            <p style="margin-top: 8px; color: #555;">${source.content.substring(0, 200)}...</p>
         </div>`;
     });
     
     // Intellectual sources
-    html += `<h4>From Your Class Notes</h4>`;
+    html += `<I style="color:rgb(255, 255, 255); margin-top: 20px;">from semester notes</I>`;
     data.intellectual_sources.forEach((source, i) => {
         html += `
-        <div style="background: #f0f8ff; padding: 15px; margin: 10px 0; border-left: 3px solid #4682b4; font-size: 0.9em;">
-            <p>${source.content.substring(0, 200)}...</p>
+        <div style="background: rgb(230, 229, 245); 
+                    padding: 12px; 
+                    margin: 10px 0; 
+                    border-left: 3px solid rgb(53, 49, 102); 
+                    border-radius: 4px;
+                    font-size: 0.9em;">
+            <p style="color: #555;">${source.content.substring(0, 200)}...</p>
         </div>`;
     });
     
-    html += `</div></details>`;
+    html += `</div></details></div>`;
     
     outputDiv.innerHTML = html;
 }

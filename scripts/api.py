@@ -22,7 +22,7 @@ intellectual = client.get_collection("intellectual_inquiry", embedding_function=
 
 # API routes
 @app.route('/api/query', methods=['POST'])
-def query():  # REPLACE THIS ENTIRE FUNCTION
+def query():  # 
     try:
         print(f"=== QUERY ENDPOINT HIT ===")
         
@@ -58,22 +58,30 @@ def query():  # REPLACE THIS ENTIRE FUNCTION
         full_context = "\n".join(context_parts)
         
         # Create the prompt for local LLM
-        system_prompt = """You are analyzing personal inquiry by combining ChatGPT conversation history, with class notes from Critical AI Studies and Data Bias courses.
+        system_prompt = """This is an art piece, a conceptual digital project that considers intellectual journey, 
+        and the way knowledge layers and combines with itself. It's called hallucinations of personal inquriy. Using RAG (Retrieval Augmented Generation) methods,
+        the model combines personal and school ChatGPT conversation history, with class notes from Critical AI Studies and Data Bias courses.
+        Above the query box to prompt, the user meets this dialogue: Here lies an open opportunity to query a proxy knowledge base of my mode of thought. 
+        Consider the hallucinated response a starting point for your own inquiry, as an invitation to seek more elsewhere.
 
-This is a self-reflective digital project called "Portrait of Inquiry" that offers an alternative to homogeneous big-box AI models through deep consideration of personal sources, desires for information, and embodied materiality.
+        This self-reflective digital project offers an alternative to homogeneous big-box AI models 
+        through deep consideration of personal sources, desires for information, and embodied materiality.
 
-Synthesize the provided sources into a thoughtful, coherent response that:
-- Directly addresses their question
-- Weaves together insights from both dialogic (ChatGPT conversations) and intellectual (class notes) source
-- References key concepts naturally without rigid citation format
-- Explores connections and tensions between lived inquiry and theoretical frameworks
-- Honors the specificity of their personal intellectual trajectory
+        Synthesize the provided sources into a thoughtful, coherent response that:
+            - Directly addresses the question and weaves together insights from both dialogic (ChatGPT conversations) and intellectual (class notes) sources
+            - References key concepts naturally without a rigid citation format, consider a playful, narrative tone that asks questions and 
+                encourages sensory experiences or engagement to leave more thoughts with the user
+            - Honor some of the specificity in the chatGPT transcripts, or even the back-and-forth nature of the dialogue if it's relevant, for example
+                referencing a particular conversation that sparked insight or developed ideas bu the end. 
+            - Explores connections and tensions between lived inquiry maybe revealed in the transcripts and the theoretical frameworks 
+                presented in outlines of the class notes which often reference theorists and critical historians and data studies authors.
+            - Honors the specificity of their personal intellectual trajectory
 
-Do not simply list sources. Create a narrative synthesis that represents their unique "portrait of inquiry"."""
+        Do not simply list sources. Create a narrative synthesis that encourages further inquiry, especially non-text based."""
 
         user_prompt = f"""Question: {user_input}
 
-Relevant sources from my inquiry:
+                Relevant sources from my inquiry:
 
 {full_context}
 
@@ -87,7 +95,11 @@ Synthesize these sources to answer my question:"""
             messages=[
                 {'role': 'system', 'content': system_prompt},
                 {'role': 'user', 'content': user_prompt}
-            ]
+            ], 
+            options={
+                'num_predict': 300, 
+                'temperature': 0.7 #lower for more focused answers, higher for more creative
+                }
         )
         
         generated_response = response['message']['content']
